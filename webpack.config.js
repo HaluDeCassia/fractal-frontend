@@ -1,13 +1,9 @@
+'webpack.config.js'
 const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-const extractSass = new ExtractTextPlugin({
-    filename: "[name].[contenthash].css",
-    disable: process.env.NODE_ENV === "development"
-});
-
 module.exports = {
-    entry: './src/App.js',
+    entry: './src/index.jsx',
     output: {
         path: __dirname + '/public',
         filename: './app.js'
@@ -17,13 +13,13 @@ module.exports = {
         contentBase: './public',
     },
     resolve: {
-        extensions: ['.js', '.jsx'],
+        extensions: ['', '.js', '.jsx'],
         alias: {
             modules: __dirname + '/node_modules'
         }
     },
     plugins: [
-        extractSass
+        new ExtractTextPlugin('app.css')
     ],
     module: {
         loaders: [{
@@ -35,19 +31,11 @@ module.exports = {
                 plugins: ['transform-object-rest-spread']
             }
         }, {
-            test: /\.[s]?css$/,
-            use: extractSass.extract({
-                use: [{
-                    loader: "css-loader"
-                }, {
-                    loader: "sass-loader"
-                }],
-                // use style-loader in development
-                fallback: "style-loader"
-            })
+            test: /\.css$/,
+            loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
         }, {
             test: /\.woff|.woff2|.ttf|.eot|.svg*.*$/,
-            loader: 'file-loader'
+            loader: 'file'
         }]
     }
 }
